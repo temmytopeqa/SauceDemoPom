@@ -4,17 +4,19 @@ from ActionPage.login_page import LoginPage
 from ActionPage.add_to_cart import AddToCartPage
 from ActionPage.logout_page import LogoutPage
 from ActionPage.payment_page import PaymentPage
+from selenium.webdriver.chrome.options import Options
 from Config.configuration import Config
-
 
 @pytest.fixture(scope="module")
 def driver_setup():
-    driver = webdriver.Chrome()
-    driver.implicitly_wait(20)
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration (to avoid errors in headless mode)
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.implicitly_wait(30)
     driver.maximize_window()
     yield driver
     driver.quit()
-
 
 @pytest.fixture(scope="module")
 def login(driver_setup):
@@ -22,7 +24,6 @@ def login(driver_setup):
     login_page = LoginPage(driver)
     login_page.open_login_page(Config.BASE_URL)
     return login_page
-
 
 @pytest.fixture(scope="module")
 def add_to_cart(driver_setup):
