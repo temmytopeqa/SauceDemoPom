@@ -34,3 +34,21 @@ def payment(driver_setup):
 @pytest.fixture(scope="module")
 def logout(driver_setup):
     return LogoutPage(driver_setup)
+
+@pytest.fixture(scope="module")
+def login(driver_setup):
+    login_page = LoginPage(driver_setup)
+    login_page.open_login_page(Config.BASE_URL)
+    return login_page
+
+@pytest.fixture(scope="module")
+def add_to_cart(driver_setup):
+    return AddToCartPage(driver_setup)
+
+@pytest.fixture(scope="module")
+def payment(driver_setup):
+    return PaymentPage(driver_setup)
+
+@pytest.fixture(scope="module")
+def logout(driver_setup):
+    return LogoutPage(driver_setup)

@@ -20,6 +20,6 @@ class AddToCartPage:
     def go_to_cart(self):
         self.wait.until(EC.element_to_be_clickable(GoToCartLocator.CART_ICON)).click()
 
-    # Click the checkout button to proceed
+    # Click the checkout button to proceed now
     def click_checkout(self):
         self.wait.until(EC.element_to_be_clickable(AddToCartLocators.CHECKOUT_BUTTON)).click()
