@@ -2,11 +2,9 @@ name: Python Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   test:
@@ -19,12 +17,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'  # Use a stable version like 3.11 unless 3.13 is required
+          python-version: '3.11'
 
       - name: Install Chrome
         run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > google.gpg
+          sudo install -o root -g root -m 644 google.gpg /usr/share/keyrings/
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
@@ -33,16 +34,17 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt-get install -y xvfb
           python -m venv venv
           source venv/bin/activate
+          pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-html
 
       - name: Run tests with xvfb
         run: |
-          sudo apt-get install -y xvfb
           source venv/bin/activate
-          xvfb-run pytest --html=report.html -p no:warnings
+          xvfb-run pytest --html=report.html -p no:warnings --capture=tee-sys
 
       - name: Upload HTML report
         if: always()
